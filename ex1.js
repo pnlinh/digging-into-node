@@ -8,6 +8,10 @@ var minimist = require('minimist');
 var util = require('util');
 var getStdin = require('get-stdin');
 
+var BASE_PATH = path.resolve(
+    process.env.BASE_PATH || __dirname
+);
+
 var args = minimist(process.argv.slice(2), {
     boolean: ['help', 'in'],
     string: ['file']
@@ -23,7 +27,7 @@ if (args.help) {
         .then(processFile)
         .catch(error);
 } else if (args.file) {
-    fs.readFile(path.resolve(args.file), function (err, contents) {
+    fs.readFile(path.join(BASE_PATH, args.file), function (err, contents) {
         if (err) {
             error(err.toString());
         } else {
