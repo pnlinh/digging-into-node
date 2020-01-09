@@ -20,9 +20,13 @@ if (args.help) {
 }
 
 function processFile(filepath) {
-    var contents = fs.readFileSync(filepath, 'utf8');
-
-    process.stdout.write(contents);
+    fs.readFile(filepath, function (err, contents) {
+        if (err) {
+            error(err.toString());
+        } else {
+            process.stdout.write(contents);
+        }
+    });
 }
 
 function error(msg, includeHelp = true) {
