@@ -7,6 +7,7 @@ var path = require('path');
 var minimist = require('minimist');
 var util = require('util');
 var getStdin = require('get-stdin');
+var Transform = require('stream').Transform;
 
 var BASE_PATH = path.resolve(
     process.env.BASE_PATH || __dirname
@@ -33,6 +34,16 @@ if (args.help) {
 
 function processFile(inStream) {
     var outStream = inStream;
+
+    var upperStream = new Transform({
+        transform(chunk, encoding, callback) {
+            this.push(chunk.toString().toUpperCase());
+            callback();
+        }
+    });
+
+    outStream = outStream.pipe(upperStream);
+
     var targetStream = process.stdout;
     outStream.pipe(targetStream);
 }
