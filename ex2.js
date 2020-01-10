@@ -8,9 +8,10 @@ var minimist = require('minimist');
 var util = require('util');
 var getStdin = require('get-stdin');
 var Transform = require('stream').Transform;
+var zlib = require('zlib');
 
 var args = minimist(process.argv.slice(2), {
-    boolean: ['help', 'in', 'out'],
+    boolean: ['help', 'in', 'out', 'compress'],
     string: ['file']
 });
 
@@ -46,6 +47,12 @@ function processFile(inStream) {
 
     outStream = outStream.pipe(upperStream);
 
+    if (args.compress) {
+        let gzipStream = zlib.createGzip();
+        outStream = outStream.pipe(gzipStream);
+        OUTFILE = `${OUTFILE}.gz`;
+    }
+
     var targetStream;
     if (args.out) {
         targetStream = process.stdout;
@@ -72,5 +79,6 @@ function printHelp() {
     console.log('--file={FILENAME}  process the file');
     console.log('--in,  -          process stdin');
     console.log('--out, -          process to stdout');
+    console.log('--compress, -     gzip the output');
     console.log('');
 }
